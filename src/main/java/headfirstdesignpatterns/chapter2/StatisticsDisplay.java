@@ -1,33 +1,44 @@
 package headfirstdesignpatterns.chapter2;
 
+import java.util.Observable;
+import java.util.Observer;
+
 public class StatisticsDisplay implements Observer, DisplayElement {
 	private float maxTemp = 0.0f;
 	private float minTemp = 200;
 	private float tempSum = 0.0f;
 	private int numReadings;
-	private Subject weatherData;
+	Observable observable;
 
-	public StatisticsDisplay(Subject weatherData) {
-		this.weatherData = weatherData;
-		weatherData.registerObserver(this);
+	public StatisticsDisplay(Observable observable){
+		this.observable = observable;
+		this.observable.addObserver(this);
+	}
+	
+	public void update(Observable obs, Object arg) {
+		if(obs instanceof WeatherData) {
+			WeatherData weatherData = (WeatherData) obs;
+			float temperature = weatherData.getTemperature();
+			this.numReadings++;
+			this.tempSum += temperature;
+			
+			if (temperature > this.maxTemp) {
+				this.maxTemp = temperature;
+			}
+
+			if (temperature < minTemp) {
+				this.minTemp = temperature;
+			}
+			
+			display();
+		}
 	}
 
-	public void update(float temperature, float humidity, float pressure) {
-		tempSum += temperature;
-		numReadings++;
-
-		if (temperature > maxTemp) {
-			maxTemp = temperature;
-		}
-
-		if (temperature < minTemp) {
-			minTemp = temperature;
-		}
-
-		display();
-	}
+	
 
 	public void display() {
-		System.out.println("Avg/Max/Min temperature = " + (tempSum / numReadings) + "/" + maxTemp + "/" + minTemp);
+		String pattern = "Avg/Max/Min temperature = %.2f/%.2f/%.2f";
+		String output = String.format(pattern, (this.tempSum / this.numReadings), this.maxTemp, this.minTemp);
+		System.out.println(output);
 	}
 }

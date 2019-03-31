@@ -1,17 +1,26 @@
 package headfirstdesignpatterns.chapter2;
 
+import java.util.Observable;
+import java.util.Observer;
+
 public class HeatIndexDisplay implements Observer, DisplayElement {
 	float heatIndex = 0.0f;
-	private WeatherData weatherData;
+	Observable observable;
+	
 
-	public HeatIndexDisplay(WeatherData weatherData) {
-		this.weatherData = weatherData;
-		weatherData.registerObserver(this);
+	public HeatIndexDisplay(Observable observable) {
+		this.observable = observable;
+		observable.addObserver(this);
 	}
 
-	public void update(float t, float rh, float pressure) {
-		heatIndex = computeHeatIndex(t, rh);
-		display();
+	public void update(Observable obs, Object arg) {
+		if(obs instanceof WeatherData) {
+			WeatherData weatherData = (WeatherData) obs;
+			float temperature = weatherData.getTemperature();
+			float humidity = weatherData.getHumidity();
+			heatIndex = computeHeatIndex(temperature, humidity);
+			display();
+		}
 	}
 	
 	private float computeHeatIndex(float t, float rh) {
@@ -27,6 +36,6 @@ public class HeatIndexDisplay implements Observer, DisplayElement {
 	}
 
 	public void display() {
-		System.out.println("Heat index is " + heatIndex);
+		System.out.println(String.format("Heat index is %.2f", heatIndex));
 	}
 }
