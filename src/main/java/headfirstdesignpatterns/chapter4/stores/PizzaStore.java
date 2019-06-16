@@ -6,9 +6,9 @@ import headfirstdesignpatterns.chapter4.pizzas.Pizza;
 public abstract class PizzaStore {
 
     public Pizza orderPizza(String type) {
-        Pizza pizza;
+        Pizza pizza = createPizza(type);
 
-        pizza = createPizza(type);
+        System.out.println("--- Making a " + pizza.getName() + " ---");
 
         pizza.prepare();
         pizza.bake();
@@ -18,6 +18,6 @@ public abstract class PizzaStore {
         return pizza;
     }
 
-    abstract Pizza createPizza(String type);
+    protected abstract Pizza createPizza(String type);
 
 }
